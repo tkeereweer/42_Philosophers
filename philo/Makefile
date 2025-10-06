@@ -6,7 +6,7 @@ OBJS = $(SRCS:.c=.o)
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g -O0 -fsanitize=thread #-fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -g -O0 #-fsanitize=thread #-fsanitize=address
 LINKS = -lpthread
 
 all: $(NAME)

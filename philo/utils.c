@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 15:24:56 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/04 15:46:46 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/05 16:14:00 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,18 @@ int	ft_atoi(const char *str)
 		i++;
 	}
 	return (res * sign);
+}
+
+t_time	get_timestamp(struct timeval start)
+{
+	struct timeval	tv;
+	t_time			time;
+	int				sec_diff;
+
+	gettimeofday(&tv, NULL);
+	sec_diff = tv.tv_sec - start.tv_sec;
+	time.min = sec_diff / 60;
+	time.sec = sec_diff - (time.min * 60);
+	time.ms = (tv.tv_usec - start.tv_usec);
+	return (time);
 }

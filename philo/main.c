@@ -6,43 +6,60 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:27:54 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/05 14:38:31 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/05 17:28:41 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-t_time	get_timestamp(struct timeval start)
+void	assign_forks(t_data *data, int i)
 {
-	struct timeval	tv;
-	t_time			time;
-	int				sec_diff;
-
-	time.min = 0;
-	gettimeofday(&tv, NULL);
-	sec_diff = tv.tv_sec - start.tv_sec;
-	if (sec_diff / 60 > 0)
+	if (data->philo_arr[i].num == 1)
 	{
-		time.min = sec_diff / 60;
-		time.sec = sec_diff - (time.min * 60);
+		pthread_mutex_init(&(data->philo_arr[i].fork_a), NULL);
+		pthread_mutex_init(&(data->philo_arr[i].fork_b), NULL);
+	}
+	else if (data->philo_arr[i].num == data->num_philo)
+	{
+		data->philo_arr[i].fork_a = data->philo_arr[i - 1].fork_b;
+		data->philo_arr[i].fork_b = data->philo_arr[0].fork_a;
 	}
 	else
-		time.sec = sec_diff;
-	time.ms = (tv.tv_usec - start.tv_usec) / 1000;
-	return (time);
+	{
+		data->philo_arr[i].fork_a = data->philo_arr[i - 1].fork_b;
+		pthread_mutex_init(&(data->philo_arr[i].fork_b), NULL);
+	}
 }
 
-void	*ft_live(void *param)
+void	ft_live(t_philo *philo)
+{
+	while (1)
+	{
+		philo->time = get_timestamp(philo->start);
+		printf("%i:%i.%.6i %i is sleeping\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
+		usleep(philo->time_to_sleep * 1000);
+		philo->time = get_timestamp(philo->start);
+		printf("%i:%i.%.6i %i is thinking\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
+		pthread_mutex_lock(&(philo->fork_a));
+		pthread_mutex_lock(&(philo->fork_b));
+		philo->time = get_timestamp(philo->start);
+		printf("%i:%i.%.6i %i is eating\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
+		usleep(philo->time_to_eat * 1000);
+		pthread_mutex_unlock(&(philo->fork_a));
+		pthread_mutex_unlock(&(philo->fork_b));
+	}
+	// time = get_timestamp(philo->start);
+	// printf("%i:%i.%i %i woke up\n", time.min, time.sec, time.ms, philo->num);
+	// return (NULL);
+}
+
+void	*ft_thread_routine(void *param)
 {
 	t_philo	*philo;
-	t_time	time;
 
 	philo = (t_philo *) param;
-	time = get_timestamp(philo->start);
-	printf("%i:%i.%i %i is sleeping\n", time.min, time.sec, time.ms, philo->num);
-	usleep(philo->time_to_sleep);
-	time = get_timestamp(philo->start);
-	printf("%i:%i.%i %i woke up\n", time.min, time.sec, time.ms, philo->num);
+
+	ft_live(philo);
 	return (NULL);
 }
 
@@ -57,7 +74,8 @@ void	create_philosopher(t_data *data, int i)
 	philo.num_eat = data->num_eat;
 	philo.start = data->start;
 	data->philo_arr[i] = philo;
-	pthread_create(&(data->philo_arr[i].tid), NULL, ft_live, &(data->philo_arr[i]));
+	assign_forks(data, i);
+	pthread_create(&(data->philo_arr[i].tid), NULL, ft_thread_routine, &(data->philo_arr[i]));
 }
 
 void	create_philo_threads(t_data *data)
@@ -67,9 +85,7 @@ void	create_philo_threads(t_data *data)
 	i = 0;
 	while (i < data->num_philo)
 	{
-
 		create_philosopher(data, i);
-		usleep(1000000);
 		i++;
 	}
 	i = 0;
