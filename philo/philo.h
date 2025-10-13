@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:44:19 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/05 16:26:52 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/12 16:06:19 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ typedef struct s_philo
 {
 	pthread_t		tid;
 	int				num;
-	pthread_mutex_t	fork_a;
-	pthread_mutex_t	fork_b;
+	pthread_mutex_t	*fork_a;
+	pthread_mutex_t	*fork_b;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
