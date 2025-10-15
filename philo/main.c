@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:27:54 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/12 16:06:04 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/15 15:51:06 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,20 @@
 
 void	assign_forks(t_data *data, int i)
 {
-	pthread_mutex_t	fork_a;
-	pthread_mutex_t	fork_b;
-
 	if (data->philo_arr[i].num == 1)
 	{
-		pthread_mutex_init(&fork_a, NULL);
-		pthread_mutex_init(&fork_b, NULL);
-		data->philo_arr[i].fork_a = &fork_a;
-		data->philo_arr[i].fork_b = &fork_b;
+		pthread_mutex_init(&data->philo_arr[i].fork_b, NULL);
 	}
 	else if (data->philo_arr[i].num == data->num_philo)
 	{
-		data->philo_arr[i].fork_a = data->philo_arr[i - 1].fork_b;
-		data->philo_arr[i].fork_b = data->philo_arr[0].fork_a;
+		data->philo_arr[i].fork_a = &data->philo_arr[i - 1].fork_b;
+		pthread_mutex_init(&data->philo_arr[i].fork_b, NULL);
+		data->philo_arr[0].fork_a = &data->philo_arr[i].fork_b;
 	}
 	else
 	{
-		data->philo_arr[i].fork_a = data->philo_arr[i - 1].fork_b;
-		pthread_mutex_init(&fork_b, NULL);
-		data->philo_arr[i].fork_b = &fork_b;
+		data->philo_arr[i].fork_a = &data->philo_arr[i - 1].fork_b;
+		pthread_mutex_init(&data->philo_arr[i].fork_b, NULL);
 	}
 }
 
@@ -42,22 +36,19 @@ void	ft_live(t_philo *philo)
 	while (philo->num_eat != 0)
 	{
 		philo->time = get_timestamp(philo->start);
-		printf("%i:%i.%.6i %i is sleeping\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
+		printf("%i:%i.%.3i %i is sleeping\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
 		usleep(philo->time_to_sleep * 1000);
 		philo->time = get_timestamp(philo->start);
-		printf("%i:%i.%.6i %i is thinking\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
+		printf("%i:%i.%.3i %i is thinking\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
 		pthread_mutex_lock(philo->fork_a);
-		pthread_mutex_lock(philo->fork_b);
+		pthread_mutex_lock(&philo->fork_b);
 		philo->time = get_timestamp(philo->start);
-		printf("%i:%i.%.6i %i is eating\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
+		printf("%i:%i.%.3i %i is eating\n", philo->time.min, philo->time.sec, philo->time.ms, philo->num);
 		usleep(philo->time_to_eat * 1000);
 		philo->num_eat -= 1;
 		pthread_mutex_unlock(philo->fork_a);
-		pthread_mutex_unlock(philo->fork_b);
+		pthread_mutex_unlock(&philo->fork_b);
 	}
-	// time = get_timestamp(philo->start);
-	// printf("%i:%i.%i %i woke up\n", time.min, time.sec, time.ms, philo->num);
-	// return (NULL);
 }
 
 void	*ft_thread_routine(void *param)
