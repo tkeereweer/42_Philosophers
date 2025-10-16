@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 15:24:56 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/16 14:12:35 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/16 16:01:31 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,26 @@ t_time	get_timestamp(struct timeval start)
 		time.ms = 1000 + time.ms;
 	}
 	return (time);
+}
+
+void	print_status(t_philo *philo, int msg)
+{
+	philo->time = get_timestamp(philo->start);
+	pthread_mutex_lock(philo->print);
+	if (msg == 0)
+		printf("%i:%i.%.3i %i is sleeping\n", philo->time.min,
+			philo->time.sec, philo->time.ms, philo->num);
+	else if (msg == 1)
+		printf("%i:%i.%.3i %i is thinking\n", philo->time.min,
+			philo->time.sec, philo->time.ms, philo->num);
+	else if (msg == 2)
+		printf("%i:%i.%.3i %i has taken a fork\n", philo->time.min,
+			philo->time.sec, philo->time.ms, philo->num);
+	else if (msg == 3)
+		printf("%i:%i.%.3i %i is eating\n", philo->time.min,
+			philo->time.sec, philo->time.ms, philo->num);
+	else if (msg == 4)
+		printf("%i:%i.%.3i %i died\n", philo->time.min,
+			philo->time.sec, philo->time.ms, philo->num);
+	pthread_mutex_unlock(philo->print);
 }
