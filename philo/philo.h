@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:44:19 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/15 15:44:04 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/16 13:49:07 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,10 @@ typedef struct s_philo
 	int				time_to_sleep;
 	int				num_eat;
 	struct timeval	start;
+	pthread_mutex_t	*print;
 	t_time			time;
+	int				dead;
+	t_time			last_meal;
 }	t_philo;
 
 typedef struct s_data
@@ -49,6 +52,8 @@ typedef struct s_data
 	int				time_to_sleep;
 	int				num_eat;
 	struct timeval	start;
+	pthread_mutex_t	print;
+	pthread_t		monitor;
 }	t_data;
 
 int		ft_atoi(const char *str);

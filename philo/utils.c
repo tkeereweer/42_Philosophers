@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 15:24:56 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/05 16:14:00 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/16 14:12:35 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,12 @@ t_time	get_timestamp(struct timeval start)
 	gettimeofday(&tv, NULL);
 	sec_diff = tv.tv_sec - start.tv_sec;
 	time.min = sec_diff / 60;
-	time.sec = sec_diff - (time.min * 60);
-	time.ms = (tv.tv_usec - start.tv_usec);
+	time.sec = sec_diff % 60;
+	time.ms = (tv.tv_usec - start.tv_usec) / 1000;
+	if (time.ms < 0)
+	{
+		time.sec--;
+		time.ms = 1000 + time.ms;
+	}
 	return (time);
 }
