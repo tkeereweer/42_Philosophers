@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 15:24:56 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/16 16:01:31 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/17 14:44:03 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,26 @@ int	ft_atoi(const char *str)
 	return (res * sign);
 }
 
+int	check_input(int argc, char *argv[])
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	while (i < argc)
+	{
+		j = 0;
+		while (argv[i][j] != '\0')
+		{
+			if (argv[i][j] < '0' || argv[i][j] > '9')
+				return (0);
+			j++;
+		}
+		i++;
+	}
+	return (1);
+}
+
 t_time	get_timestamp(struct timeval start)
 {
 	struct timeval	tv;
@@ -66,6 +86,7 @@ t_time	get_timestamp(struct timeval start)
 
 void	print_status(t_philo *philo, int msg)
 {
+	pthread_mutex_lock(&philo->time_m);
 	philo->time = get_timestamp(philo->start);
 	pthread_mutex_lock(philo->print);
 	if (msg == 0)
@@ -83,5 +104,6 @@ void	print_status(t_philo *philo, int msg)
 	else if (msg == 4)
 		printf("%i:%i.%.3i %i died\n", philo->time.min,
 			philo->time.sec, philo->time.ms, philo->num);
+	pthread_mutex_unlock(&philo->time_m);
 	pthread_mutex_unlock(philo->print);
 }

@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:44:19 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/16 16:13:43 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/17 14:44:53 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_philo
 	int				num_eat;
 	struct timeval	start;
 	pthread_mutex_t	*print;
+	pthread_mutex_t	time_m;
 	t_time			time;
 	pthread_mutex_t	dead_m;
 	int				dead;
@@ -62,6 +63,7 @@ typedef struct s_data
 }	t_data;
 
 int		ft_atoi(const char *str);
+int		check_input(int argc, char *argv[]);
 t_time	get_timestamp(struct timeval start);
 void	assign_forks(t_data *data, int i);
 int		do_stop(t_philo *philo);

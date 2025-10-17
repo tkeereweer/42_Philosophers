@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:27:54 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/16 16:20:10 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/17 14:44:36 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void	create_philosopher(t_data *data, int i)
 	philo.time_to_sleep = data->time_to_sleep;
 	philo.num_eat = data->num_eat;
 	philo.start = data->start;
+	pthread_mutex_init(&philo.time_m, NULL);
 	philo.print = &data->print;
 	pthread_mutex_init(&philo.dead_m, NULL);
 	philo.dead = 0;
@@ -94,7 +95,7 @@ int	solo_philo(t_data *data)
 	philo.time = get_timestamp(data->start);
 	printf("%i:%i.%.3i %i has taken a fork\n", philo.time.min,
 		philo.time.sec, philo.time.ms, 1);
-	usleep((data->time_to_die - data->time_to_sleep - 3) * 1000);
+	usleep((data->time_to_die - data->time_to_sleep) * 1000);
 	philo.time = get_timestamp(data->start);
 	printf("%i:%i.%.3i %i died\n", philo.time.min,
 		philo.time.sec, philo.time.ms, 1);
@@ -107,6 +108,8 @@ int	main(int argc, char *argv[])
 	int		ret;
 
 	if (argc < 5)
+		return (1);
+	if (check_input(argc, argv) == 0)
 		return (1);
 	ret = init_data(argc, argv, &data);
 	if (ret != 2)
