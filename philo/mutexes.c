@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 16:00:34 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/17 14:22:13 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/27 10:57:13 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,16 @@ int	is_dead(t_philo *philo)
 	pthread_mutex_lock(&philo->dead_m);
 	ret = philo->dead;
 	pthread_mutex_unlock(&philo->dead_m);
+	return (ret);
+}
+
+int	done_eat(t_philo *philo)
+{
+	int	ret;
+
+	pthread_mutex_lock(&philo->num_eat_m);
+	ret = philo->num_eat;
+	pthread_mutex_unlock(&philo->num_eat_m);
 	return (ret);
 }
 

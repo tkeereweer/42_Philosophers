@@ -6,13 +6,20 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:27:54 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/17 14:44:36 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/27 11:04:12 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	init_data(int argc, char *argv[], t_data *data)
+static int	solo_philo(t_data *data)
+{
+	pthread_create(&(data->solo_philo), NULL, solo_philo_routine, data);
+	pthread_join(data->solo_philo, NULL);
+	return (0);
+}
+
+static int	init_data(int argc, char *argv[], t_data *data)
 {
 	data->num_philo = ft_atoi(argv[1]);
 	if (data->num_philo == 0)
@@ -35,7 +42,7 @@ int	init_data(int argc, char *argv[], t_data *data)
 	return (2);
 }
 
-void	create_philosopher(t_data *data, int i)
+static void	create_philosopher(t_data *data, int i)
 {
 	t_philo	philo;
 
@@ -45,9 +52,7 @@ void	create_philosopher(t_data *data, int i)
 	philo.time_to_sleep = data->time_to_sleep;
 	philo.num_eat = data->num_eat;
 	philo.start = data->start;
-	pthread_mutex_init(&philo.time_m, NULL);
 	philo.print = &data->print;
-	pthread_mutex_init(&philo.dead_m, NULL);
 	philo.dead = 0;
 	philo.last_meal.min = 0;
 	philo.last_meal.sec = 0;
@@ -55,12 +60,15 @@ void	create_philosopher(t_data *data, int i)
 	philo.stop_m = &data->stop_m;
 	philo.stop = &data->stop;
 	data->philo_arr[i] = philo;
+	pthread_mutex_init(&data->philo_arr[i].num_eat_m, NULL);
+	pthread_mutex_init(&data->philo_arr[i].time_m, NULL);
+	pthread_mutex_init(&data->philo_arr[i].dead_m, NULL);
 	assign_forks(data, i);
 	pthread_create(&(data->philo_arr[i].tid), NULL,
 		ft_thread_routine, &(data->philo_arr[i]));
 }
 
-void	create_philo_threads(t_data *data)
+static void	create_philo_threads(t_data *data)
 {
 	int	i;
 
@@ -71,7 +79,7 @@ void	create_philo_threads(t_data *data)
 		create_philosopher(data, i);
 		i++;
 	}
-	pthread_create(&data->monitor, NULL, monitoring_routine, data);
+	pthread_create(&data->monitor, NULL, run_monitoring_routine, data);
 	i = 0;
 	while (i < data->num_philo)
 	{
@@ -79,27 +87,6 @@ void	create_philo_threads(t_data *data)
 		i++;
 	}
 	pthread_join(data->monitor, NULL);
-}
-
-int	solo_philo(t_data *data)
-{
-	t_philo	philo;
-
-	philo.time = get_timestamp(data->start);
-	printf("%i:%i.%.3i %i is sleeping\n", philo.time.min,
-		philo.time.sec, philo.time.ms, 1);
-	usleep(data->time_to_sleep * 1000);
-	philo.time = get_timestamp(data->start);
-	printf("%i:%i.%.3i %i is thinking\n", philo.time.min,
-		philo.time.sec, philo.time.ms, 1);
-	philo.time = get_timestamp(data->start);
-	printf("%i:%i.%.3i %i has taken a fork\n", philo.time.min,
-		philo.time.sec, philo.time.ms, 1);
-	usleep((data->time_to_die - data->time_to_sleep) * 1000);
-	philo.time = get_timestamp(data->start);
-	printf("%i:%i.%.3i %i died\n", philo.time.min,
-		philo.time.sec, philo.time.ms, 1);
-	return (0);
 }
 
 int	main(int argc, char *argv[])

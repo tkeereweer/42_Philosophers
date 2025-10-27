@@ -1,5 +1,6 @@
 SRCS = main.c \
 	routines.c \
+	monitoring.c \
 	mutexes.c \
 	utils.c
 
