@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 15:45:18 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/27 11:00:51 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/31 11:53:34 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@ static void	ft_eat(t_philo *philo)
 	pthread_mutex_lock(&philo->num_eat_m);
 	philo->num_eat -= 1;
 	pthread_mutex_unlock(&philo->num_eat_m);
-	usleep(philo->time_to_eat * 1000);
+	pthread_mutex_lock(&philo->last_meal_m);
 	philo->last_meal = get_timestamp(philo->start);
+	pthread_mutex_unlock(&philo->last_meal_m);
+	usleep(philo->time_to_eat * 1000);
 	pthread_mutex_unlock(philo->fork_a);
 	pthread_mutex_unlock(&philo->fork_b);
 }
@@ -58,6 +60,8 @@ void	*ft_thread_routine(void *param)
 	t_philo	*philo;
 
 	philo = (t_philo *) param;
+	while (*(philo->sim) != 1)
+		continue ;
 	ft_live(philo);
 	return (NULL);
 }
@@ -65,22 +69,18 @@ void	*ft_thread_routine(void *param)
 void	*solo_philo_routine(void *param)
 {
 	t_data	*data;
-	t_time	time;
+	int		time;
 
 	data = (t_data *) param;
 	time = get_timestamp(data->start);
-	printf("%i:%i.%.3i %i is sleeping\n", time.min,
-		time.sec, time.ms, 1);
+	printf("%i %i is sleeping\n", time, 1);
 	usleep(data->time_to_sleep * 1000);
 	time = get_timestamp(data->start);
-	printf("%i:%i.%.3i %i is thinking\n", time.min,
-		time.sec, time.ms, 1);
+	printf("%i %i is thinking\n", time, 1);
 	time = get_timestamp(data->start);
-	printf("%i:%i.%.3i %i has taken a fork\n", time.min,
-		time.sec, time.ms, 1);
+	printf("%i %i has taken a fork\n", time, 1);
 	usleep((data->time_to_die - data->time_to_sleep) * 1000);
 	time = get_timestamp(data->start);
-	printf("%i:%i.%.3i %i died\n", time.min,
-		time.sec, time.ms, 1);
+	printf("%i %i died\n", time, 1);
 	return (NULL);
 }

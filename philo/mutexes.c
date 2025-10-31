@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 16:00:34 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/27 10:57:13 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/31 11:23:48 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,9 @@ void	destroy_mutexes(t_data *data)
 	while (i < data->num_philo)
 	{
 		pthread_mutex_destroy(&data->philo_arr[i].fork_b);
-		pthread_mutex_destroy(&data->philo_arr[i].time_m);
 		pthread_mutex_destroy(&data->philo_arr[i].dead_m);
+		pthread_mutex_destroy(&data->philo_arr[i].num_eat_m);
+		pthread_mutex_destroy(&data->philo_arr[i].last_meal_m);
 		i++;
 	}
 	pthread_mutex_destroy(&data->stop_m);

@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 10:21:13 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/27 10:25:26 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/31 11:54:07 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	ft_die(t_data *data, int tslm, int i, int deaths)
 static void	monitoring_routine(t_data *data)
 {
 	int		i;
-	t_time	now;
+	int		now;
 	int		tslm;
 	int		deaths;
 
@@ -43,10 +43,9 @@ static void	monitoring_routine(t_data *data)
 		while (i < data->num_philo && data->stop == 0)
 		{
 			now = get_timestamp(data->start);
-			tslm = now.min * 60000 + now.sec * 1000 + now.ms
-				- data->philo_arr[i].last_meal.min * 60000
-				- data->philo_arr[i].last_meal.sec * 1000
-				- data->philo_arr[i].last_meal.ms;
+			pthread_mutex_lock(&data->philo_arr[i].last_meal_m);
+			tslm = now - data->philo_arr[i].last_meal;
+			pthread_mutex_unlock(&data->philo_arr[i].last_meal_m);
 			pthread_mutex_lock(&data->philo_arr[i].num_eat_m);
 			if ((tslm >= data->time_to_die || data->philo_arr[i].num_eat == 0)
 				&& data->philo_arr[i].dead != 1)

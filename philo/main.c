@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:27:54 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/27 11:04:12 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/31 11:53:47 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static int	init_data(int argc, char *argv[], t_data *data)
 	data->num_eat = -1;
 	if (argc == 6)
 		data->num_eat = ft_atoi(argv[5]);
+	data->sim = 0;
 	data->philo_arr = (t_philo *) malloc(data->num_philo * sizeof(t_philo));
 	if (data->philo_arr == NULL)
 		return (1);
@@ -54,14 +55,13 @@ static void	create_philosopher(t_data *data, int i)
 	philo.start = data->start;
 	philo.print = &data->print;
 	philo.dead = 0;
-	philo.last_meal.min = 0;
-	philo.last_meal.sec = 0;
-	philo.last_meal.ms = 0;
+	philo.last_meal = 0;
 	philo.stop_m = &data->stop_m;
 	philo.stop = &data->stop;
+	philo.sim = &data->sim;
 	data->philo_arr[i] = philo;
 	pthread_mutex_init(&data->philo_arr[i].num_eat_m, NULL);
-	pthread_mutex_init(&data->philo_arr[i].time_m, NULL);
+	pthread_mutex_init(&data->philo_arr[i].last_meal_m, NULL);
 	pthread_mutex_init(&data->philo_arr[i].dead_m, NULL);
 	assign_forks(data, i);
 	pthread_create(&(data->philo_arr[i].tid), NULL,
@@ -80,6 +80,7 @@ static void	create_philo_threads(t_data *data)
 		i++;
 	}
 	pthread_create(&data->monitor, NULL, run_monitoring_routine, data);
+	data->sim = 1;
 	i = 0;
 	while (i < data->num_philo)
 	{

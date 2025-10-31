@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 15:24:56 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/17 14:44:03 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/31 11:50:05 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,45 +65,36 @@ int	check_input(int argc, char *argv[])
 	return (1);
 }
 
-t_time	get_timestamp(struct timeval start)
+int	get_timestamp(struct timeval start)
 {
 	struct timeval	tv;
-	t_time			time;
 	int				sec_diff;
+	int				ms_diff;
 
 	gettimeofday(&tv, NULL);
 	sec_diff = tv.tv_sec - start.tv_sec;
-	time.min = sec_diff / 60;
-	time.sec = sec_diff % 60;
-	time.ms = (tv.tv_usec - start.tv_usec) / 1000;
-	if (time.ms < 0)
+	ms_diff = (tv.tv_usec - start.tv_usec) / 1000;
+	if (ms_diff < 0)
 	{
-		time.sec--;
-		time.ms = 1000 + time.ms;
+		sec_diff--;
+		ms_diff = 1000 + ms_diff;
 	}
-	return (time);
+	return (sec_diff * 1000 + ms_diff);
 }
 
 void	print_status(t_philo *philo, int msg)
 {
-	pthread_mutex_lock(&philo->time_m);
 	philo->time = get_timestamp(philo->start);
 	pthread_mutex_lock(philo->print);
 	if (msg == 0)
-		printf("%i:%i.%.3i %i is sleeping\n", philo->time.min,
-			philo->time.sec, philo->time.ms, philo->num);
+		printf("%i %i is sleeping\n", philo->time, philo->num);
 	else if (msg == 1)
-		printf("%i:%i.%.3i %i is thinking\n", philo->time.min,
-			philo->time.sec, philo->time.ms, philo->num);
+		printf("%i %i is thinking\n", philo->time, philo->num);
 	else if (msg == 2)
-		printf("%i:%i.%.3i %i has taken a fork\n", philo->time.min,
-			philo->time.sec, philo->time.ms, philo->num);
+		printf("%i %i has taken a fork\n", philo->time, philo->num);
 	else if (msg == 3)
-		printf("%i:%i.%.3i %i is eating\n", philo->time.min,
-			philo->time.sec, philo->time.ms, philo->num);
+		printf("%i %i is eating\n", philo->time, philo->num);
 	else if (msg == 4)
-		printf("%i:%i.%.3i %i died\n", philo->time.min,
-			philo->time.sec, philo->time.ms, philo->num);
-	pthread_mutex_unlock(&philo->time_m);
+		printf("%i %i died\n", philo->time, philo->num);
 	pthread_mutex_unlock(philo->print);
 }
