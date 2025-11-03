@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 15:44:19 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/31 11:23:14 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/11/03 13:11:19 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,6 @@
 # include <stdio.h>
 # include <pthread.h>
 # include <sys/time.h>
-
-typedef struct s_time
-{
-	int	min;
-	int	sec;
-	int	ms;
-}	t_time;
 
 typedef struct s_philo
 {
@@ -39,13 +32,13 @@ typedef struct s_philo
 	int				num_eat;
 	struct timeval	start;
 	pthread_mutex_t	*print;
-	// t_time			time;
 	int				time;
 	pthread_mutex_t	dead_m;
 	int				dead;
-	// t_time			last_meal;
 	pthread_mutex_t	last_meal_m;
 	int				last_meal;
+	pthread_mutex_t	done_eat_m;
+	int				done_eat;
 	pthread_mutex_t	*stop_m;
 	int				*stop;
 	int				*sim;
@@ -70,12 +63,11 @@ typedef struct s_data
 
 int		ft_atoi(const char *str);
 int		check_input(int argc, char *argv[]);
-// t_time	get_timestamp(struct timeval start);
 int		get_timestamp(struct timeval start);
 void	assign_forks(t_data *data, int i);
 int		do_stop(t_philo *philo);
 int		is_dead(t_philo *philo);
-int		done_eat(t_philo *philo);
+int		meal_count(t_philo *philo);
 void	print_status(t_philo *philo, int msg);
 void	destroy_mutexes(t_data *data);
 void	*ft_thread_routine(void *param);

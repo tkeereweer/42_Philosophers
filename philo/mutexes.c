@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 16:00:34 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/31 11:23:48 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/11/03 11:18:54 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,14 @@ int	is_dead(t_philo *philo)
 	return (ret);
 }
 
-int	done_eat(t_philo *philo)
+int	meal_count(t_philo *philo)
 {
-	int	ret;
+	int	meals;
 
 	pthread_mutex_lock(&philo->num_eat_m);
-	ret = philo->num_eat;
+	meals = philo->num_eat;
 	pthread_mutex_unlock(&philo->num_eat_m);
-	return (ret);
+	return (meals);
 }
 
 void	destroy_mutexes(t_data *data)
@@ -72,6 +72,7 @@ void	destroy_mutexes(t_data *data)
 		pthread_mutex_destroy(&data->philo_arr[i].dead_m);
 		pthread_mutex_destroy(&data->philo_arr[i].num_eat_m);
 		pthread_mutex_destroy(&data->philo_arr[i].last_meal_m);
+		pthread_mutex_destroy(&data->philo_arr[i].done_eat_m);
 		i++;
 	}
 	pthread_mutex_destroy(&data->stop_m);
